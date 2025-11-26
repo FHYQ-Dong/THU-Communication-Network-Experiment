@@ -14,7 +14,7 @@ SNR = 10.^(SNR_dB/10);
 M = [4;16];
 
 % 重复实验次数，可修改
-N = 5e3;
+N = 5e5;
 if mod(N,4)~=0
     error('Invalid bit sequence length');
 end
@@ -87,15 +87,11 @@ BER = BER./N;
 SER = SER ./ (N./log2(M)); 
 
 % 理论值
-ser_theory = [2.*myqfunc(sin(pi/M(1)).*sqrt(SNR.*2)); 4.*(1-1/sqrt(M(2))).*myqfunc(sqrt(3/2/(M(2)-1).*SNR))];
+ser_theory = [2.*myqfunc(sin(pi/M(1)).*sqrt(SNR.*2)); 4.*(1-1/sqrt(M(2))).*myqfunc(sqrt(3/2/(M(2)-1).*SNR.*2))];
 ber_theory = ser_theory./log2(M);
 
 % 绘图
 figure;
-disp("size of SNR_dB"); disp(size(SNR_dB));
-disp("size of BER"); disp(size(BER));
-disp("size of ber_theory"); disp(size(ber_theory));
-disp(BER(2,:));
 semilogy(SNR_dB, BER(1,:),'bo', ...
     SNR_dB, ber_theory(1,:),'b', ...
     SNR_dB, BER(2,:),'rx', ...
@@ -182,8 +178,8 @@ function data_bit_demod = Inverse_Gray_mapping_QAM_complex(data_rx, M, mod_set)
     bit_per_sym = log2(M);
     I_rx = real(data_rx);  % 分开 I,Q 路
     Q_rx = imag(data_rx);  % 分开 I,Q 路
-    I_mod_idx = dsearchn(real(mod_set(:)), I_rx(:));  % ML 准则找电平的索引，为一个列向量
-    Q_mod_idx = dsearchn(imag(mod_set(:)), Q_rx(:));  % ML 准则找电平的索引，为一个列向量
+    I_mod_idx = dsearchn(real(mod_set(:)), I_rx(:)) - 1;  % ML 准则找电平的索引，为一个列向量
+    Q_mod_idx = dsearchn(imag(mod_set(:)), Q_rx(:)) - 1;  % ML 准则找电平的索引，为一个列向量
     I_idx_bit_mat = zeros(bit_per_sym/2, length(I_rx));  % 索引的二进制表示，每列为一个索引
     Q_idx_bit_mat = zeros(bit_per_sym/2, length(Q_rx));  % 索引的二进制表示，每列为一个索引
     for k = 1:bit_per_sym/2 
