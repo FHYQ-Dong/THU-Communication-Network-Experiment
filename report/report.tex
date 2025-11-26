@@ -1,0 +1,249 @@
+\documentclass[utf8]{article}
+
+\input{chants.tex}
+
+
+% 标题信息
+%----------------------------------------------------------------
+\title{\textbf{实验1 压缩量化实验报告}}
+\author{FHYQ-Dong}
+\date{\zhtoday}
+
+%----------------------------------------------------------------
+% 文档开始
+%----------------------------------------------------------------
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}
+
+%----------------------------------------------------------------
+% 1. 实验目的
+%----------------------------------------------------------------
+\section{实验目的}
+\begin{enumerate}
+    \item 通过Matlab仿真，熟悉压缩量化相关方案的实现以及关键性能指标的测量方法. 
+    \item 通过对均匀分布和拉普拉斯分布信源的量化实验，深入掌握均匀量化和非均匀量化的具体实现方式及其适用场景. 
+\end{enumerate}
+
+
+%----------------------------------------------------------------
+% 2. 实验内容
+%----------------------------------------------------------------
+\section{实验内容}
+\begin{enumerate}
+    \item 观察均匀分布下采用均匀量化产生的量化噪声的分布，统计量化噪声及信噪比，并与理论值进行对比分析. 
+    \item 观察拉普拉斯分布下采用 $\mu$ 律压扩和均匀量化产生的量化噪声的分布，统计量化噪声及信噪比，并与理论值进行对比分析. 
+\end{enumerate}
+
+
+%----------------------------------------------------------------
+% 3. 实验环境
+%----------------------------------------------------------------
+\section{实验环境}
+本实验所有仿真、数据处理及可视化均在MATLAB R2023a环境中完成
+
+
+%----------------------------------------------------------------
+% 4. 实验结果与分析
+%----------------------------------------------------------------
+\section{实验结果与分析}
+\subsection{均匀分布下的均匀量化}
+\subsubsection{幅度分布分析}
+实验首先生成了1,000,000个服从$[-1, 1]$区间均匀分布的随机采样点（点列A）. 图 \ref{fig:uniform_dist} 展示了该点列的幅度分布直方图，并与理想的PDF进行了对比. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/exp1_uniform_点列A的幅度分布.png}
+    \caption{生成的均匀分布信号样本（点列A）的幅度分布}
+    \label{fig:uniform_dist}
+\end{figure}
+
+从图中可以看出，实验生成的样本概率密度在$[-1, 1]$区间内基本均匀. 图中出现的微小波动是由于统计样本数量有限所致. 根据大数定律，只有当样本数量趋于无穷大时，样本的经验分布才会完全收敛于理论分布. 因此，当前样本量下的细微差异是符合统计学预期的. 
+
+\subsubsection{量化误差分析}
+对点列A分别进行1比特、2比特和3比特的均匀量化，量化范围为$[-1, 1]$. 图 \ref{fig:uniform_error} 展示了三种情况下的量化误差$e(x)$的分布情况. 
+
+\begin{figure}[H]
+    \centering
+    \subfigure[1-bit量化]{\includegraphics[width=0.3\textwidth]{images/exp1_uniform_1bit下的量化误差分布.png}} \quad
+    \subfigure[2-bit量化]{\includegraphics[width=0.3\textwidth]{images/exp1_uniform_2bit下的量化误差分布.png}} \quad
+    \subfigure[3-bit量化]{\includegraphics[width=0.3\textwidth]{images/exp1_uniform_3bit下的量化误差分布.png}}
+    \caption{均匀量化下不同比特数的量化误差分布}
+    \label{fig:uniform_error}
+\end{figure}
+
+观察可得，在三种比特数下，量化误差的分布均近似为均匀分布. 这是因为输入信号本身是均匀分布的，且量化间隔是均匀划分的，导致信号落入每个量化间隔内的任意位置是等可能的，从而使得量化误差在区间内均匀分布. 
+\begin{itemize}
+    \item 对于1-bit量化，$L=2, \Delta=1$，误差范围为$[-0.5, 0.5]$. 
+    \item 对于2-bit量化，$L=4, \Delta=0.5$，误差范围为$[-0.25, 0.25]$. 
+    \item 对于3-bit量化，$L=8, \Delta=0.25$，误差范围为$[-0.125, 0.125]$. 
+\end{itemize}
+图中所示的误差分布范围与理论计算完全吻合. 
+
+\subsubsection{性能指标计算与对比}
+首先推导相关性能指标的理论值. 
+\begin{enumerate}
+    \item 信号功率 $\sigma_{s,th}^2$：
+    由于量化范围覆盖了全部信号，$\sigma_{s,th}^2 = E[x^2]$.
+    \begin{equation}
+        \sigma_{s,th}^{2} = \int_{-1}^{1} x^{2}p_{x}(x)dx = \int_{-1}^{1} x^{2}(0.5)dx = 0.5 \left[ \frac{x^3}{3} \right]_{-1}^{1} = 0.5 \left( \frac{1}{3} - (-\frac{1}{3}) \right) = \frac{1}{3}
+    \end{equation}    
+    \item 量化噪声功率 $\sigma_{q,th}^2$：
+    无过载噪声. 
+    \begin{equation}
+        \sigma_{q,th}^{2} = \frac{\Delta^2}{12} = \frac{(2x_{max}/L)^2}{12} = \frac{(2/2^R)^2}{12} = \frac{4/2^{2R}}{12} = \frac{1}{3 \cdot 2^{2R}}
+    \end{equation}
+    \item 量化信噪比 $SNR_{q,th}$：
+    \begin{equation}
+        SNR_{q,th} = \frac{\sigma_{s,th}^2}{\sigma_{q,th}^2} = \frac{1/3}{1/(3 \cdot 2^{2R})} = 2^{2R} = L^2 = 20R\log_{10}(2) \text{ dB} \approx 6.02R \text{ dB}
+    \end{equation}
+\end{enumerate}
+将上述理论值与MATLAB仿真得到的实验值进行对比，结果汇总于表 \ref{tab:uniform_results}. 
+
+\begin{table}[H]
+    \centering
+    \caption{均匀分布下均匀量化实验记录}
+    \label{tab:uniform_results}
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+        \textbf{量化比特数 (R)} & \textbf{1} & \textbf{2} & \textbf{3} \\
+        \midrule
+        $\sigma_{s,exp}^2$ & 0.333695 & 0.333695 & 0.333695 \\
+        $\sigma_{s,th}^2$ & 0.333333 & 0.333333 & 0.333333 \\
+        \midrule
+        $\sigma_{q,exp}^2$ & 0.083347 & 0.020823 & 0.005214 \\
+        $\sigma_{q,th}^2$ & 0.083333 & 0.020833 & 0.005208 \\
+        \midrule
+        $SNR_{q,exp}$ (dB) & 6.0246 & 12.0481 & 18.0621 \\
+        $SNR_{q,th}$ (dB) & 6.0206 & 12.0412 & 18.0618 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+分析表 \ref{tab:uniform_results} 可知，实验测得的信号功率、噪声功率和信噪比均与理论推导值高度吻合，相对误差极小，验证了理论模型的准确性. 实验数据展示了均匀量化的一个核心规律：每增加1个量化比特，信噪比提升约6 dB（$12.0481 - 6.0246 \approx 6.02$ dB, $18.0621 - 12.0481 \approx 6.01$ dB），这与 $6.02R$ 的理论公式一致. 实验数据与理论值之间的微小差异主要源于有限样本数量引入的统计波动.
+
+\subsection{拉普拉斯分布下的非均匀量化}
+\subsubsection{信号幅度分布}
+实验使用提供的逆累积分布函数生成了1,000,000个服从拉普拉斯分布（$\sigma_x^2=2$）的随机采样点（点列A）. 其幅度分布如图 \ref{fig:laplace_dist} 所示. 该分布在0点处有尖锐的峰值，并向两侧呈指数衰减，符合拉普拉斯分布的理论特征，验证了信源生成的正确性. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/exp2_laplace_点列A的幅度分布.png}
+    \caption{生成的拉普拉斯分布信号样本（点列A）的幅度分布}
+    \label{fig:laplace_dist}
+\end{figure}
+
+\subsubsection{均匀量化性能}
+作为基准，首先对点列A在 $[-10, 10]$ 范围内进行8-bit均匀量化. 其量化误差分布如图 \ref{fig:laplace_uniform_error} 所示，性能指标记录于表 \ref{tab:laplace_uniform}.
+
+\begin{figure}[H]
+    \centering
+    \subfigure[均匀量化误差分布]{\label{fig:laplace_uniform_error-a}\includegraphics[width=0.4\textwidth]{images/exp2_laplace_均匀量化的量化误差分布.png}} \quad
+    \subfigure[步长视图]{\label{fig:laplace_uniform_error-b}\includegraphics[width=0.4\textwidth]{images/exp2_laplace_均匀量化的量化误差分布（步长视图）.png}}
+    \caption{拉普拉斯分布下8-bit均匀量化的量化误差分布}
+    \label{fig:laplace_uniform_error}
+\end{figure}
+
+从图 \ref{fig:laplace_uniform_error} 中可以看出：
+\begin{enumerate}
+    \item 图 \ref{fig:laplace_uniform_error-a} 的横坐标范围在 $[-3, 3]$ 之间，说明量化产生了过载噪声，但是由于拉普拉斯分布的特性，其数量极少，难以从图中看出.
+    \item 图 \ref{fig:laplace_uniform_error-b} 展示的一个步长中的量化误差仍然近似均匀分布，这是因为 8-bit 量化的分辨率较高，单个量化区间内的信号分布可以近似看作均匀的，从而使得量化误差在该区间内均匀分布.
+\end{enumerate}
+
+\begin{table}[htbp]
+    \centering
+    \caption{拉普拉斯分布下8-bit均匀量化实验记录}
+    \label{tab:laplace_uniform}
+    \begin{tabular}{@{}lc@{}}
+        \toprule
+        \textbf{性能指标} & \textbf{实验值} \\
+        \midrule
+        $E[x_{exp}^2]/\text{dB}$ & 2.005531 \\
+        $\sigma_{exp}^2/\text{dB}$ & 0.000623 \\
+        $SNR_{exp}/\text{dB}$ & 35.0785 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{$\mu$ 律压缩效果}
+对点列A进行 $\mu$ 律压缩（$\mu=255, x_{\text{max}}=10$）得到点列B. 压缩后点列B的样本分布如图 \ref{fig:laplace_compressed} 所示. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/exp2_laplace_μ律压缩后的样本分布.png}
+    \caption{拉普拉斯分布信号经μ律压缩后的样本分布（点列B）}
+    \label{fig:laplace_compressed}
+\end{figure}
+
+对比图\ref{fig:laplace_dist}和图\ref{fig:laplace_compressed}可以发现，μ律压缩函数极大地改变了信号的幅度分布. 原先在0点附近的尖峰被有效“压平”，信号的概率密度在整个$[-10, 10]$范围内变得更加均匀. 这种分布的均匀化，使得后续的均匀量化器能够更有效地利用其量化电平.
+
+\subsubsection{压扩域量化分析}
+对压缩后的点列B进行8-bit均匀量化得到点列C. B与C之间的量化误差 $e_{BC}(x)$ 分布如图 \ref{fig:laplace_bc_error} 所示，性能指标记录于表 \ref{tab:laplace_bc}.
+
+\begin{figure}[H]
+    \centering
+    \subfigure[BC间的量化误差分布]{\label{fig:laplace_bc_error-a}\includegraphics[width=0.4\textwidth]{images/exp2_laplace_BC间的量化误差分布.png}} \quad
+    \subfigure[步长视图]{\label{fig:laplace_bc_error-b}\includegraphics[width=0.4\textwidth]{images/exp2_laplace_BC间的量化误差分布（步长视图）.png}}
+    \caption{压缩域（BC间）的量化误差分布}
+    \label{fig:laplace_bc_error}
+\end{figure}
+图 \ref{fig:laplace_bc_error} 展示的量化误差分布与均匀量化时的误差分布类似，仍然近似均匀分布. 但是图 \ref{fig:laplace_bc_error-a} 中的横坐标范围明显缩小，这是因为压缩函数将过载噪声大幅度减少了.
+
+\begin{table}[H]
+    \centering
+    \caption{拉普拉斯分布下非均匀量化实验记录（压扩域）}
+    \label{tab:laplace_bc}
+    \begin{tabular}{@{}lc@{}}
+        \toprule
+        \textbf{性能指标} & \textbf{实验值} \\
+        \midrule
+        $E[x_{exp}^2]/\text{dB}$ & 29.266324 \\
+        $\sigma_{BC,exp}^2/\text{dB}$ & 0.000511 \\
+        $SNR_{BC,exp}/\text{dB}$ & 47.5768 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+需要注意的是，表\ref{tab:laplace_bc}中的信噪比高达 47.58 dB，但这并非最终的系统性能，因为此时的信号功率是被压缩函数非线性放大了的，不具有物理上的直接可比性. 
+
+\subsubsection{$\mu$ 律端到端性能分析}
+将点列C通过μ律扩张函数 $g^{-1}(y)$ 得到最终的重建信号点列D. 原始信号A与最终重建信号D之间的量化误差$e_{AD}(x)$分布如图 \ref{fig:laplace_ad_error} 所示. 
+
+\begin{figure}[H]
+    \centering
+    \subfigure[AD间的量化误差分布]{\label{fig:laplace_ad_error-a}\includegraphics[width=0.4\textwidth]{images/exp2_laplace_AD间的量化误差分布.png}} \quad
+    \subfigure[步长视图]{\label{fig:laplace_ad_error-b}\includegraphics[width=0.4\textwidth]{images/exp2_laplace_AD间的量化误差分布（步长视图）.png}}
+    \caption{端到端（AD间）非均匀量化的误差分布}
+    \label{fig:laplace_ad_error}
+\end{figure}
+
+最终的端到端误差分布与拉普拉斯分布相似. 这是因为经过压扩和量化后，量化误差在压缩域内近似均匀分布，但经过扩张函数的非线性变换后，误差的分布形态被重新塑造，最终呈现出与原始信号相似的统计特性. 通过压扩函数，量化器等效地在0点附近分配了更多的量化阶，从而使得在原点分布更密集的拉普拉斯信号能够获得更高的量化精度，而在远端分布稀疏的信号则允许较大的量化误差.
+
+计算理论的 $\mu$ 律压扩系统的信噪比为
+\begin{equation}
+    SNR_{q,AD,th} = \frac{3L^{2}}{\ln^{2}(1+\mu)} = \frac{3 \cdot (2^8)^2}{(\ln(1+255))^2} \approx 6394.4 \approx 38.06 \text{ dB}
+\end{equation}
+将实验测得的端到端性能与理论值进行对比，并与之前的均匀量化结果进行比较，汇总于表 \ref{tab:laplace_ad}. 
+
+\begin{table}[H]
+    \centering
+    \caption{拉普拉斯分布下非均匀量化实验记录（端到端）}
+    \label{tab:laplace_ad}
+    \begin{tabular}{@{}lc@{}}
+        \toprule
+        \textbf{性能指标} & \textbf{实验值/理论值} \\
+        \midrule
+        $E[x_{exp}^2]/\text{dB}$ & 2.005531 \\
+        $\sigma_{AD,exp}^2/\text{dB}$ & 0.000459 \\
+        \midrule
+        $SNR_{AD,exp}/\text{dB}$ & 36.4036 \\
+        $SNR_{q,AD,th}/\text{dB}$ & 38.06 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+从最终结果看，$\mu$ 律非均匀量化系统在8-bit条件下的实验信噪比为36.40 dB. 与表 \ref{tab:laplace_uniform} 中相同比特数的均匀量化器获得的35.08 dB相比，性能提升超过1.3 dB. 这一增益证明了对于拉普拉斯这类非均匀分布的信源，通过压扩技术使量化阶梯非均匀化，能够更有效地分配比特资源，从而在相同的码率下获得更高的保真度. 
+
+实验信噪比（36.40 dB）与理论近似值（38.06 dB）存在约1.6 dB的差距. 这主要是因为理论公式是一个基于$\mu \gg 1$且忽略过载噪声的近似推导. 而在实际仿真中，信号的动态范围可能超出设定的 $x_{max}$，从而引入了不可避免的过载噪声，导致实际信噪比低于理论上限. 
+
+\end{document}
