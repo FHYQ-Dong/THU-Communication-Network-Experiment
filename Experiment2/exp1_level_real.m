@@ -9,12 +9,13 @@ rng(2025);  %固定种子
 % 信噪比范围 E_s/\sigma^2
 SNR_dB = -5:1:20;
 SNR = 10.^(SNR_dB/10);
+SNR_rec_id = [9, 13, 16]; % SNR = [2, 5, 10]
 
 % 符号数
 M = [2;4];
 
 % 比特序列长度，可修改
-N = 5e5;
+N = 1e6;
 if mod(N,2)~=0
     error('Invalid bit sequence length');
 end
@@ -100,6 +101,22 @@ title('实电平信道 SER-SNR');
 box on;
 grid on;
 
+% 打印信息
+SNR_rec = SNR(SNR_rec_id);
+SER_rec_M2 = SER(1, SNR_rec_id);
+SER_rec_M4 = SER(2, SNR_rec_id);
+BER_rec_M2 = BER(1, SNR_rec_id);
+BER_rec_M4 = BER(2, SNR_rec_id);
+fprintf('=====  仿真长度 N = %d  =====\n', N);
+disp('-----  差错统计（M=2）  -----');
+for k = 1:length(SNR_rec)
+    fprintf('SNR = %.2f, 误符号数 = %d, 误bit数 = %d\n', SNR_rec(k), SER_rec_M2(k) .* (N./log2(M(1))), BER_rec_M2(k) .* N);
+end
+disp('-----  差错统计（M=4）  -----');
+for k = 1:length(SNR_rec)
+    fprintf('SNR = %.2f, 误符号数 = %d, 误bit数 = %d\n', SNR_rec(k), SER_rec_M4(k) .* (N./log2(M(2))), BER_rec_M4(k) .* N);
+end
+fprintf('\n');
 
 function [data_mod, mod_set] = Gray_mapping_real(data_bit, M)
     % Gray 编码为电平序列（A = 1)

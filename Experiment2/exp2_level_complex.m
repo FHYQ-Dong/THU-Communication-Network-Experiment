@@ -9,6 +9,7 @@ rng(2025);  %固定种子
 % 信噪比范围 E_s/\sigma^2
 SNR_dB = 0:1:25;
 SNR = 10.^(SNR_dB/10);
+SNR_rec_id = [4, 8, 11]; % SNR = [2, 5, 10]
 
 % 符号数
 M = [4;16];
@@ -120,6 +121,23 @@ legend('M=4, simulation', 'M=4, theory', ...
 title('复电平信道 SER-SNR');
 box on;
 grid on;
+
+% 打印信息
+SNR_rec = SNR(SNR_rec_id);
+SER_rec_M4 = SER(1,SNR_rec_id);
+SER_rec_M16 = SER(2,SNR_rec_id);
+BER_rec_M4 = BER(1,SNR_rec_id);
+BER_rec_M16 = BER(2,SNR_rec_id);
+fprintf('=====  仿真长度 N = %d  =====\n', N);
+disp('-----  差错统计（M=4）  -----');
+for k = 1:length(SNR_rec_id)
+    fprintf('SNR = %.2f, 误符号数 = %d, 误bit数 = %d\n', SNR_dB(SNR_rec_id(k)), SER_rec_M4(k)*N/log2(4), BER_rec_M4(k)*N);
+end
+disp('-----  差错统计（M=16）  -----');
+for k = 1:length(SNR_rec_id)
+    fprintf('SNR = %.2f, 误符号数 = %d, 误bit数 = %d\n', SNR_dB(SNR_rec_id(k)), SER_rec_M16(k)*N/log2(16), BER_rec_M16(k)*N);
+end
+fprintf('\n');
 
 
 function [data_mod, mod_set] = Gray_mapping_QAM_complex(data_bit, M)
