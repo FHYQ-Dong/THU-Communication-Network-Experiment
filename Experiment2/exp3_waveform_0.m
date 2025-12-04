@@ -49,33 +49,33 @@ for cnt1 = 1:length(delta_t)
         signal_energy_theory(cnt1,cnt2) = Ex2*(sum(p_t.*g_t)*delta_t(cnt1))^2;
         for cnt3 = 1:N
             % 随机生成一个符号电平{-1，1}
-            x = 2*randi([0,1]) - 1;
+            x = $TODO$;
             % 生成一个符号的波形采样序列
             x_t = x.*p_t;
             % 加性噪声
-            noise_power = n0 / (2 * delta_t(cnt1));
-            noise = sqrt(noise_power) * randn(size(t));
+            noise_power = $TODO$;
+            noise = $TODO$;
             % AWGN信道
             y_t = x_t + noise;
             % 画采样电平
-            if cnt3 == 1 && ismember(T(cnt2),T_rec)
+            if $TODO$ && ismember(T(cnt2),T_rec)
                 figure;
                 plot(t,y_t);
                 box on; grid on;
                 title(['T=',num2str(T_rec),', \Delta t=',num2str(delta_t(cnt1))]);
             end
             % 相关接收
-            y = sum(y_t .* g_t) * delta_t(cnt1);
+            y = $TODO$;
             % 判决结果
-            x_hat = sign(y);
+            x_hat = $TODO$;
             % 累计误符号率
             ser(cnt1,cnt2) = ser(cnt1,cnt2) + (x~=x_hat);
             % 累计噪声能量
             noise_energy(cnt1,cnt2) = ...
-                noise_energy(cnt1,cnt2) + (sum(noise .* g_t) * delta_t(cnt1))^2;
+                noise_energy(cnt1,cnt2) + $TODO$;
             % 累计符号能量
             signal_energy(cnt1,cnt2) = ...
-                signal_energy(cnt1,cnt2) + (sum(x_t .* g_t) * delta_t(cnt1))^2;
+                signal_energy(cnt1,cnt2) + $TODO$;
         end
     end
 end
@@ -91,7 +91,7 @@ snr_dB_theory = 10*log10(signal_energy_theory./noise_energy_theory);
 % 计算波形的理论信噪比Es = V^2*T
 Es_n0_wave = Ex2*V^2*T/(n0/2);
 Es_n0_wave_dB = 10*log10(Es_n0_wave);
-ser_theory = myqfunc(sqrt(Es_n0_wave));
+ser_theory = $TODO$;
 
 % 绘图
 
