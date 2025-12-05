@@ -11,6 +11,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{multirow}
+\usepackage{float}
 \usepackage{siunitx}
 \lstset{
     basicstyle          =   \sffamily,          % 基本代码风格
@@ -67,57 +68,49 @@
         \item 随机符号序列的平均能量；
         \item 星座图的理论符号能量。
     \end{enumerate}
-    请选择其中一种，并说明原因。
-
-    \textbf{实验结果：}在生成高斯噪声时，应选择星座图的理论符号能量。信道噪声的方差$\sigma^2$是信道本身的统计特性，定义时通常相对于信号的统计平均能量（即期望值）。如果使用单次随机序列的平均能量，会导致噪声功率随着发送数据的具体内容而波动，这不符合实际信道的物理模型。理论符号能量代表了长期的统计平均，能保证信噪比定义的准确性和一致性。
+    请选择其中一种，并说明原因。 \\
+    \textbf{原因：}在生成高斯噪声时，应选择星座图的理论符号能量。信道噪声的方差$\sigma^2$是信道本身的统计特性，定义时通常相对于信号的统计平均能量（即期望值）。如果使用单次随机序列的平均能量，会导致噪声功率随着发送数据的具体内容而波动，这不符合实际信道的物理模型。理论符号能量代表了长期的统计平均，能保证信噪比定义的准确性和一致性。
 
     \item 比较原始比特序列和解调后的比特序列。分别统计不同信噪比、不同仿真次数$N$下的符号差错个数和比特差错个数。
-
-    \textbf{实验结果：}不同信噪比和仿真次数下的符号差错数与比特差错数统计如表 \ref{tab:exp1_symbol_res} 和表 \ref{tab:exp1_bit_res} 所示。
-    
-    \begin{table}[h]
+    \begin{table}[H]
         \centering
-        \caption{实电平传输：符号差错个数统计 (M=2)}
+        \caption{实电平传输：符号差错个数统计}
         \label{tab:exp1_symbol_res}
-        \begin{tabular}{|c|c|c|c|}
+        \begin{tabular}{|c|c|c|c|c|c|c|}
             \hline
-            \multirow{2}{*}{SNR (dB)} & \multicolumn{3}{c|}{仿真次数 $N$}\\
-            \cline{2-4}
-             & $10^4$ & $10^5$ & $10^6$ \\ 
+            \multirow{2}{*}{SNR} & \multicolumn{3}{c|}{$M=2$} & \multicolumn{3}{c|}{$M=4$} \\
+            \cline{2-7}
+             & $N=10^4$ & $N=10^5$ & $N=10^6$ & $N=10^4$ & $N=10^5$ & $N=10^6$ \\
             \hline
-            2 & 756 & 7885 & 78690 \\
+            2 & 756 & 7885 & 78690 & 2012 & 19895 & 197406 \\
             \hline
-            5 & 112 & 1302 & 12555 \\
+            5 & 112 & 1302 & 12555 & 1209 & 11870 & 118832 \\
             \hline
-            10 & 11 & 80 & 738 \\ 
+            10 & 11 & 80 & 738 & 592 & 80 & 58612 \\
             \hline
         \end{tabular}
     \end{table}
-
-    \begin{table}[h]
+    \begin{table}[H]
         \centering
-        \caption{实电平传输：比特差错个数统计 (M=4)}
+        \caption{实电平传输：比特差错个数统计}
         \label{tab:exp1_bit_res}
-        \begin{tabular}{|c|c|c|c|}
+        \begin{tabular}{|c|c|c|c|c|c|c|}
             \hline
-            \multirow{2}{*}{SNR (dB)} & \multicolumn{3}{c|}{仿真次数 $N$}\\
-            \cline{2-4}
-            & $10^4$ & $10^5$ & $10^6$ \\
+            \multirow{2}{*}{SNR} & \multicolumn{3}{c|}{$M=2$} & \multicolumn{3}{c|}{$M=4$} \\
+            \cline{2-7}
+             & $N=10^4$ & $N=10^5$ & $N=10^6$ & $N=10^4$ & $N=10^5$ & $N=10^6$ \\
             \hline
-            2 & 2176 & 21336 & 211801 \\
+            2 & 756 & 7885 & 78690 & 2176 & 21336 & 211801 \\
             \hline
-            5 & 1211 & 11931 & 119514 \\
+            5 & 112 & 1302 & 12555 & 1211 & 11931 & 119514 \\
             \hline
-            10 & 592 & 5912 & 58615 \\
+            10 & 11 & 80 & 738 & 592 & 5912 & 58615 \\
             \hline
         \end{tabular}
     \end{table}
 
     \item 在合适的仿真次数下，计算误符号率$P_s$和误比特率$P_b$。分别画出$M=2$和$M=4$时，$P_s$和$P_b$随信噪比$E_s/\sigma^2$的变化曲线。一般情况下，当独立的错误事件数量达到100量级时，计算得到的误码率就比较稳定了。其中，要求仿真曲线涉及的SNR范围包括误码率从$10^{-3}$到$10^{-1}$。
-    
-    \textbf{实验结果：}符号率($P_s$)和误比特率($P_b$)随信噪比的变化曲线如图 \ref{fig:exp1_ser} 和图 \ref{fig:exp1_ber} 所示。
-    
-    \begin{figure}[h]
+    \begin{figure}[H]
         \centering
         \subfloat[误符号率 $P_s$]{\label{fig:exp1_ser}\includegraphics[width=0.45\textwidth]{images/exp1_ser_snr.png}}
         \hfill
@@ -125,8 +118,7 @@
         \caption{实电平传输误码率曲线}
     \end{figure}
 
-    \item 同时画出理论值对应的曲线，观察仿真结果是否与理论值相符，分析原因。
-    
+    \item 同时画出理论值对应的曲线，观察仿真结果是否与理论值相符，分析原因。 \\
     \textbf{分析：}观察仿真结果可知，仿真曲线与理论曲线基本重合。这表明仿真模型正确地反映了高斯白噪声信道下的传输特性。随着信噪比的增加，误码率呈瀑布状迅速下降。
 \end{enumerate}
 
@@ -135,10 +127,8 @@
 
 \begin{enumerate}[label=(\arabic*)]
 	\item 对于$M=16$的QAM调制情况，请选择两个合适的信噪比条件画出接收信号的复电平星座图。
-	
-    \textbf{实验结果：}$M=16$ QAM调制在SNR=15dB和20dB下的接收信号星座图如图 \ref{fig:exp2_constellation} 所示。可见信噪比越高，接收符号点越集中于理论星座点附近。
 
-    \begin{figure}[h]
+    \begin{figure}[H]
         \centering
         \subfloat[SNR=15dB]{\includegraphics[width=0.45\textwidth]{images/exp2_stella_15db.png}}
         \hfill
@@ -148,18 +138,16 @@
     \end{figure}
 
 	\item 比较发送信号和接收信号。分别统计不同信噪比、不同仿真次数$N$下的符号差错个数和bit差错个数。
-	
-    \textbf{实验结果：}差错个数统计如表 \ref{tab:exp2_symbol_res} 和表 \ref{tab:exp2_bit_res} 所示。
     
-    \begin{table}[h]
+    \begin{table}[H]
         \centering
         \caption{复电平传输：符号差错个数统计}
         \label{tab:exp2_symbol_res}
         \begin{tabular}{|c|c|c|c|c|c|c|}
             \hline
-            \multirow{2}{*}{SNR} & \multicolumn{3}{c|}{$M=4$ ($N$)} & \multicolumn{3}{c|}{$M=16$ ($N$)} \\
+            \multirow{2}{*}{SNR} & \multicolumn{3}{c|}{$M=4$} & \multicolumn{3}{c|}{$M=16$} \\
             \cline{2-7}
-             & $10^4$ & $10^5$ & $10^6$ & $10^4$ & $10^5$ & $10^6$ \\
+             & $N=10^4$ & $N=10^5$ & $N=10^6$ & $N=10^4$ & $N=10^5$ & $N=10^6$ \\
             \hline
             3 & 733 & 7639 & 75812 & 1581 & 15863 & 158567 \\ 
             \hline
@@ -169,16 +157,15 @@
             \hline
         \end{tabular}
     \end{table}
-
-    \begin{table}[h]
+    \begin{table}[H]
         \centering
         \caption{复电平传输：比特差错个数统计}
         \label{tab:exp2_bit_res}
         \begin{tabular}{|c|c|c|c|c|c|c|}
             \hline
-            \multirow{2}{*}{SNR} & \multicolumn{3}{c|}{$M=4$ ($N$)} & \multicolumn{3}{c|}{$M=16$ ($N$)} \\
+            \multirow{2}{*}{SNR} & \multicolumn{3}{c|}{$M=4$} & \multicolumn{3}{c|}{$M=16$} \\
             \cline{2-7}
-             & $10^4$ & $10^5$ & $10^6$ & $10^4$ & $10^5$ & $10^6$ \\
+             & $N=10^4$ & $N=10^5$ & $N=10^6$ & $N=10^4$ & $N=10^5$ & $N=10^6$ \\
             \hline
             3 & 758 & 7929 & 78939 & 2116 & 21245 & 211596 \\
             \hline
@@ -190,10 +177,7 @@
     \end{table}
 
 	\item 在合适的仿真次数下，计算误符号率$P_s$和误比特率$P_b$。分别画出$M=4$和$M=16$时，$P_s$和$P_b$随信噪比$\text{SNR}=E_s/\sigma^2$的变化曲线。其中，要求仿真曲线涉及的SNR范围包括误码率从$10^{-3}$到$10^{-1}$。
-	
-    \textbf{实验结果：}误符号率和误比特率随信噪比变化曲线如图 \ref{fig:exp2_curves} 所示。
-
-    \begin{figure}[h]
+    \begin{figure}[H]
         \centering
         \subfloat[误符号率 $P_s$]{\includegraphics[width=0.45\textwidth]{images/exp2_ser_snr.png}}
         \hfill
@@ -202,8 +186,7 @@
         \label{fig:exp2_curves}
     \end{figure}
 
-	\item 同时画出理论值对应的曲线，观察仿真结果是否与理论值相符，分析原因。
-	
+	\item 同时画出理论值对应的曲线，观察仿真结果是否与理论值相符，分析原因。 \\ 
     \textbf{分析：}仿真结果与理论值吻合。对比M=4和M=16，可以看出在相同信噪比下，M=16的误码率显著高于M=4。这是因为M=16的星座点更密集，最小欧氏距离更小，因此更容易受噪声干扰发生误判。
 \end{enumerate}
 
@@ -211,11 +194,9 @@
 \subsection{波形信道传输}
 
 \begin{enumerate}[label=(\arabic*)]
-	\item 对于两个不同的采样时间间隔$\Delta t$，选择合适的信噪比画出接收端有噪声波形在一个符号持续时间内的波形，即对于时间长度为$T$的符号波形$y_t$的$T/\Delta t$个采样电平。结合观察说明为什么对接收波形直接采样判决不妥。
-	
+	\item 对于两个不同的采样时间间隔$\Delta t$，选择合适的信噪比画出接收端有噪声波形在一个符号持续时间内的波形，即对于时间长度为$T$的符号波形$y_t$的$T/\Delta t$个采样电平。结合观察说明为什么对接收波形直接采样判决不妥。 \\
     \textbf{实验结果：}接收信号波形如图 \ref{fig:exp3_waveform} 所示。由波形图可以看出，时间窗越小，噪声方差越大。如果直接对某一点进行采样判决，该点的瞬时噪声方差为无穷大。而匹配滤波器利用了整个符号周期的能量，通过积分运算将噪声平均化（噪声均值为0），从而提高了输出端的信噪比。
-    
-    \begin{figure}[h]
+    \begin{figure}[H]
         \centering
         \subfloat[Noise=0.01]{\includegraphics[width=0.45\textwidth]{images/exp3_recv_noise_0.01.png}}
         \hfill
@@ -225,44 +206,33 @@
     \end{figure}
 
     \item 分别画出$\Delta t=0.1$和$\Delta t=0.01$时，等效信噪比随波形持续时间$T$的变化曲线。
-    
-    \textbf{实验结果：}等效信噪比随波形持续时间$T$的变化如图 \ref{fig:exp3_snr_T} 所示。
-
-    \begin{figure}[h]
+    \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\textwidth]{images/exp3_snr_T.png}
         \caption{等效信噪比随波形持续时间T的变化}
         \label{fig:exp3_snr_T}
     \end{figure}
 
-    \item 分别画出$\Delta t=0.1$和$\Delta t=0.01$时，误符号率随信噪比的变化曲线。同时画出理论值对应的曲线，观察仿真结果是否与理论值相符，以及两种$\Delta t$下结果的区别，分析原因。
-    
+    \item 分别画出$\Delta t=0.1$和$\Delta t=0.01$时，误符号率随信噪比的变化曲线。同时画出理论值对应的曲线，观察仿真结果是否与理论值相符，以及两种$\Delta t$下结果的区别，分析原因。 \\ 
     \textbf{实验结果：}误符号率曲线如图 \ref{fig:exp3_ser_snr} 所示。$\Delta t$ 越小，数字仿真中的求和运算越逼近连续时间的积分，因此结果越接近理论值。
-    
-    \begin{figure}[h]
+    \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\textwidth]{images/exp3_ser_snr.png}
         \caption{波形信道误符号率}
         \label{fig:exp3_ser_snr}
     \end{figure}
 
-    \item 为什么随着持续时间$T$的提升，等效信噪比增加且误码率降低？
-    
+    \item 为什么随着持续时间$T$的提升，等效信噪比增加且误码率降低？ \\ 
     \textbf{分析：}对于恒定幅度的信号，信号能量 $E_s = \int_0^T s^2(t) dt$ 正比于持续时间 $T$。而在加性高斯白噪声信道中，噪声功率谱密度 $N_0/2$ 是常数。匹配滤波器的输出信噪比为 $2E_s/N_0$。因此，随着 $T$ 增加，信号能量 $E_s$ 增加，导致信噪比增加。信噪比增加进而导致误码率降低（$P_e = Q(\sqrt{2E_s/N_0})$）。
 \end{enumerate}
 
 \section{实验总结、体会和建议}
-
 通过本次实验，我深入理解了基带传输系统的基本原理，包括实/复电平调制、AWGN信道特性、最佳接收机设计等。
-1. 验证了高斯白噪声下不同调制方式（M-PAM, M-QAM）的误码率性能，仿真结果与理论公式高度吻合。
-2. 观察了星座图随信噪比的变化，直观感受了噪声对信号判决的影响。
-3. 在波形信道实验中，体会了匹配滤波器在抗噪性能上的优势，理解了信号能量与时间$T$的关系。
+\begin{enumerate}
+    \item 验证了高斯白噪声下不同调制方式（M-PAM, M-QAM）的误码率性能，仿真结果与理论公式吻合。
+    \item 观察了星座图随信噪比的变化，直观感受了噪声对信号判决的影响。
+    \item 在波形信道实验中，体会了匹配滤波器在抗噪性能上的优势，理解了信号能量与时间$T$的关系。
+\end{enumerate}
 实验加深了对通信原理课程理论知识的理解，提高了Matlab仿真建模的能力。
 
 \end{document}
-
-
-%%% Local Variables:
-%%% mode: late\rvx
-%%% TeX-master: t
-%%% End:
