@@ -1,0 +1,250 @@
+% Homework template for Inference and Information
+% UPDATE: September 26, 2017 by Xiangxiang
+\documentclass[a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{moreenum}
+\usepackage{mathtools}
+\usepackage{url}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{siunitx}
+\usepackage{float} % 用于固定图片位置
+\usepackage{geometry}
+
+\lstset{
+    basicstyle          =   \sffamily,          % 基本代码风格
+    keywordstyle        =   \bfseries,          % 关键字风格
+    commentstyle        =   \rmfamily\itshape,  % 注释的风格，斜体
+    stringstyle         =   \ttfamily,          % 字符串风格
+    flexiblecolumns,                
+    numbers             =   left,   % 行号的位置在左边
+    showspaces          =   false,  % 是否显示空格
+    numberstyle         =   \zihao{-5}\ttfamily,    % 行号的样式
+    showstringspaces    =   false,
+    captionpos          =   t,      % 这段代码的名字所呈现的位置
+    frame               =   lrtb,   % 显示边框
+}
+
+\lstdefinestyle{Python}{
+    language        =   Python, 
+    basicstyle      =   \zihao{-5}\ttfamily,
+    numberstyle     =   \zihao{-5}\ttfamily,
+    keywordstyle    =   \color{blue},
+    keywordstyle    =   [2] \color{teal},
+    stringstyle     =   \color{magenta},
+    commentstyle    =   \color{red}\ttfamily,
+    breaklines      =   true,   
+    columns         =   fixed,  
+    basewidth       =   0.5em,
+}
+
+% a4, 0.8
+\geometry{a4paper, scale=0.8}
+
+\usepackage[caption=false,font=footnotesize,labelfont=rm,textfont=rm,subrefformat=parens]{subfig}
+\usepackage{booktabs} 
+\usepackage[mathcal]{eucal}
+\usepackage{color}
+% \usepackage{iidef} % 注释掉未提供的包，避免编译错误
+\newif\ifans\anstrue
+\newcommand{\myspace}[1]{\par\vspace{#1\baselineskip}}
+
+% 简单的课程信息定义，替代 iidef 包中的命令
+\newcommand{\thecourseinstitute}[1]{\def\courseinstitute{#1}}
+\newcommand{\theterm}[1]{\def\term{#1}}
+\thecourseinstitute{\textnormal{通信与网络}}
+\theterm{2024秋季}
+
+\begin{document}
+
+\vspace{3mm}
+\centerline{\textbf{\Large{实验3$\quad$载波传输实验报告}}}
+
+\setcounter{section}{4}
+
+\section{实验内容}
+
+\subsection{BPSK调制}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item \textbf{给出前10个符号的发送波形和接收波形图。}
+    
+    图 \ref{fig:bpsk_wave_tx} 展示了前10个符号的发送波形，其中包含了基带脉冲成形信号与调制后的载波信号。图 \ref{fig:bpsk_wave_rx} 展示了叠加了高斯白噪声后的接收信号波形。
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/exp1-前10个符号波形.png}
+        \caption{BPSK前10个符号的发送波形（基带与载波）}
+        \label{fig:bpsk_wave_tx}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/exp1-接收信号波形.png}
+        \caption{BPSK接收信号波形（含噪声）}
+        \label{fig:bpsk_wave_rx}
+    \end{figure}
+  
+    \item \textbf{画出前5个符号的匹配滤波输出波形（采样前），并在图中明确标出最佳采样时刻。}
+    
+    图 \ref{fig:bpsk_mf_out} 展示了两种不同匹配滤波方法的输出。
+    \begin{itemize}
+        \item \textbf{方法1（上图）：} 接收信号直接与载波匹配滤波器卷积。输出呈现高频振荡特性，但在最佳采样时刻（红点所示）能取到最大值。
+        \item \textbf{方法2（下图）：} 接收信号先下变频再进行基带匹配滤波。输出为三角波形状，包络清晰。
+    \end{itemize}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/exp1-前5个符号输出波形.png}
+        \caption{BPSK匹配滤波输出及最佳采样时刻}
+        \label{fig:bpsk_mf_out}
+    \end{figure}
+
+	\item \textbf{分别比较误符号率和误比特率的理论值与仿真值。}
+	
+	对于BPSK调制，误符号率（SER）与误比特率（BER）相等。图 \ref{fig:bpsk_ber} 和 图 \ref{fig:bpsk_ser} 分别展示了不同采样偏差下的BER和SER性能曲线。
+	
+	\textbf{分析：}
+	\begin{itemize}
+	    \item 在无采样偏差（offset 0）的情况下，方法1和方法2的仿真曲线均与理论曲线（红线）高度重合，验证了匹配滤波器的最佳接收性能。
+	    \item 当存在采样偏差时，误码率性能均有下降。可以明显观察到，方法1（实线）随着偏差增加，性能恶化极其严重；而方法2（虚线）对采样偏差的鲁棒性更强。
+	\end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/exp1-BPSK误比特率性能曲线.png}
+        \caption{BPSK误比特率（BER）性能曲线对比}
+        \label{fig:bpsk_ber}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/exp1-BPSK误码率性能曲线.png}
+        \caption{BPSK误码率（SER）性能曲线对比}
+        \label{fig:bpsk_ser}
+    \end{figure}
+
+	\item \textbf{分析误码率随采样偏差变化的规律。}
+	
+	图 \ref{fig:bpsk_offset} 展示了固定信噪比下，误码率随采样点偏差（-3到3个采样点）的变化情况。
+	
+	\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/exp1-误码率随采样偏差变化.png}
+        \caption{误码率随采样偏差的变化规律}
+        \label{fig:bpsk_offset}
+    \end{figure}
+    
+    \textbf{深度分析：}
+    \begin{itemize}
+        \item \textbf{方法1：} 误码率对采样时刻极其敏感，呈深V型。这是因为匹配滤波器的冲激响应包含载波项 $\cos(2\pi f_c t)$。若采样时刻偏差 $\Delta t$，则输出会乘以因子 $\cos(2\pi f_c \Delta t)$。由于载波频率 $f_c=500$Hz 较高，微小的 $\Delta t$ 会导致该余弦项幅值剧烈波动甚至过零，导致信噪比急剧下降。
+        \item \textbf{方法2：} 误码率变化较平缓。因为该方法先去除了高频载波，剩下的基带信号通过矩形脉冲匹配滤波后，其自相关函数为三角波。三角波在顶点附近变化缓慢，因此少量的采样偏差（offset 1-2点）仅导致幅值轻微下降，不会引起像方法1那样的剧烈恶化。
+    \end{itemize}
+
+	\item \textbf{比较画出的功率谱密度与理论功率谱密度。}
+	
+	图 \ref{fig:bpsk_psd} 展示了仿真得到的BPSK信号功率谱密度与理论值的对比。
+	
+	\textbf{分析：}
+	仿真结果（蓝色）与理论曲线（红色）吻合良好。功率谱主要集中在载波频率 $f_c = \pm 500$Hz 附近，呈现 $\text{sinc}^2$ 函数形状。主瓣宽度由符号周期 $T$ 决定，约为 $2/T = 200$Hz。
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/exp1-功率谱.png}
+        \caption{BPSK信号功率谱密度（仿真值 vs 理论值）}
+        \label{fig:bpsk_psd}
+    \end{figure}
+
+\end{enumerate}
+
+
+\subsection{4PAM调制}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item \textbf{给出前5个符号的发送波形和接收波形图。}
+    
+    图 \ref{fig:pam_wave_tx} 展示了前10个符号的发送波形，其中包含了基带脉冲成形信号与调制后的载波信号。图 \ref{fig:pam_wave_rx} 展示了叠加了高斯白噪声后的接收信号波形。
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/exp2-前5个符号波形.png}
+        \caption{4PAM前5个符号的发送波形（基带与载波）}
+        \label{fig:pam_wave_tx}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/exp2-接收信号波形.png}
+        \caption{4PAM接收信号波形（含噪声）}
+        \label{fig:pam_wave_rx}
+    \end{figure}
+
+    \item \textbf{画出前5个符号的匹配滤波输出波形（采样前），并在图中明确标出最佳采样时刻。}
+    
+    图 \ref{fig:pam_mf_out} 展示了4PAM调制下的匹配滤波输出。可以看到输出电平具有多级特性（对应4PAM的4个符号电平），最佳采样点位于波峰处。
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/exp2-前5个符号输出波形.png}
+        \caption{4PAM匹配滤波输出及最佳采样时刻}
+        \label{fig:pam_mf_out}
+    \end{figure}
+
+	\item \textbf{分别比较误符号率和误比特率的理论值与仿真值。}
+	
+	图 \ref{fig:pam_ber} 和 图 \ref{fig:pam_ser} 分别展示了4PAM的BER和SER性能。
+	
+	\textbf{分析：}
+	\begin{itemize}
+	    \item 在无偏置时，仿真结果与理论值吻合。需要注意的是，4PAM采用了格雷码映射，因此在低误码率下，误比特率约为误符号率的一半（$BER \approx SER / \log_2 M = SER / 2$）。
+	    \item 与BPSK实验结论一致，方法1对采样偏差非常敏感，而方法2则相对稳健。相比BPSK，4PAM达到相同误码率需要更高的信噪比，因为其星座点更加密集，抗噪性能较差。
+	    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/exp2-4PAM误比特率性能曲线.png}
+        \caption{4PAM误比特率（BER）性能曲线}
+        \label{fig:pam_ber}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/exp2-4PAM误码率性能曲线.png}
+        \caption{4PAM误符号率（SER）性能曲线}
+        \label{fig:pam_ser}
+    \end{figure}
+
+	\item \textbf{比较画出的功率谱密度与理论功率谱密度。}
+	
+	图 \ref{fig:pam_psd} 为4PAM信号的功率谱。其形状与BPSK相同（均为矩形脉冲成形导致的 $\text{sinc}^2$ 谱），中心频率同样在 $\pm 500$Hz，区别仅在于幅值比例因子不同。
+	
+	\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/exp2-功率谱.png}
+        \caption{4PAM信号功率谱密度}
+        \label{fig:pam_psd}
+    \end{figure}
+
+\end{enumerate}
+
+\subsection{对比BPSK和4PAM的误码曲线}
+
+综合对比图 \ref{fig:bpsk_ber} 和 图 \ref{fig:pam_ber}：
+\begin{itemize}
+    \item \textbf{频谱效率：} 4PAM在相同的符号速率下传输2 bit信息，而BPSK传输1 bit，因此4PAM的频谱效率是BPSK的2倍。
+    \item \textbf{功率效率：} 为了达到相同的误比特率，4PAM需要的 $E_b/N_0$ 显著高于BPSK。这是因为为了保持平均符号能量一致，4PAM的星座点间距比BPSK更小，更容易受到噪声干扰而发生判决错误。
+\end{itemize}
+
+
+\section{实验总结、体会和建议}
+\begin{enumerate}
+    \item 通过仿真验证了匹配滤波器是高斯白噪声背景下的最佳接收滤波器，能最大化输出信噪比。
+    \item 揭示了方法1与方法2在工程实现上的差异。虽然理论性能一致，但方法1对定时误差（采样相位）极其敏感；而方法2由于利用了基带脉冲较宽的相关峰，对定时误差有较强的容忍度，更适合实际系统。
+    \item 对比BPSK与4PAM，理解了通信系统中有效性（频谱效率）与可靠性（误码性能）之间的权衡关系。
+\end{enumerate}
+
+\end{document}
