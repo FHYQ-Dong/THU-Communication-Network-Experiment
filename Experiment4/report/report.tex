@@ -1,0 +1,206 @@
+% Homework template for Inference and Information
+% UPDATE: September 26, 2017 by Xiangxiang
+\documentclass[a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{moreenum}
+\usepackage{mathtools}
+\usepackage{url}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{siunitx}
+\usepackage{geometry}
+\usepackage{float} % 增加float包以便更好地控制图片位置
+
+\geometry{a4paper, scale=0.8}
+
+\lstset{
+    basicstyle          =   \sffamily,          % 基本代码风格
+    keywordstyle        =   \bfseries,          % 关键字风格
+    commentstyle        =   \rmfamily\itshape,  % 注释的风格，斜体
+    stringstyle         =   \ttfamily,  % 字符串风格
+    flexiblecolumns,                % 
+    numbers             =   left,   % 行号的位置在左边
+    showspaces          =   false,  % 是否显示空格，显示了有点乱，所以不显示了
+    numberstyle         =   \zihao{-5}\ttfamily,    % 行号的样式，小五号，tt等宽字体
+    showstringspaces    =   false,
+    captionpos          =   t,      % 这段代码的名字所呈现的位置，t指的是top上面
+    frame               =   lrtb,   % 显示边框
+}
+
+\lstdefinestyle{Python}{
+    language        =   Python, % 语言选Python
+    basicstyle      =   \zihao{-5}\ttfamily,
+    numberstyle     =   \zihao{-5}\ttfamily,
+    keywordstyle    =   \color{blue},
+    keywordstyle    =   [2] \color{teal},
+    stringstyle     =   \color{magenta},
+    commentstyle    =   \color{red}\ttfamily,
+    breaklines      =   true,   % 自动换行，建议不要写太长的行
+    columns         =   fixed,  % 如果不加这一句，字间距就不固定，很丑，必须加
+    basewidth       =   0.5em,
+}
+% \usepackage{subcaption}
+\usepackage[caption=false,font=footnotesize,labelfont=rm,textfont=rm,subrefformat=parens]{subfig}
+\usepackage{booktabs} % toprule
+\usepackage[mathcal]{eucal}
+\usepackage{color}
+\usepackage{iidef}
+\newif\ifans\anstrue
+\newcommand{\myspace}[1]{\par\vspace{#1\baselineskip}}
+
+\thecourseinstitute{\textnormal{通信与网络}}
+\theterm{确定}
+\begin{document}
+
+
+
+\vspace{3mm}
+\centerline{\textbf{\Large{实验4$\quad$差错控制编码实验报告}}}
+
+\setcounter{section}{4}
+
+\section{实验内容}
+\subsection{(7,4)汉明码的纠错实验}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item 记录不同信道误符号率$\varepsilon$下，有汉明码编译码和无汉明码编译码时的误块率和误比特率。
+
+\begin{table}[htbp]
+\centering
+\caption{(7,4)汉明码在不同信道误符号率下的性能对比}
+\label{tab:hamming_bsc_perf}
+\resizebox{\textwidth}{!}{% 自动调整表格宽度以适应页面
+\begin{tabular}{cc|c|c|c|c|c|c}
+\hline
+\multicolumn{2}{c|}{信道误符号率 $\varepsilon$} & 0.001 & 0.005 & 0.010 & 0.050 & 0.100 & 0.200 \\ \hline
+\multicolumn{1}{c|}{\multirow{3}{*}{无汉明码编译码}} & 数据块数 & 10000 & 10000 & 10000 & 10000 & 10000 & 10000 \\ \cline{2-8} 
+\multicolumn{1}{c|}{} & 误比特率 & 0.00097 & 0.00507 & 0.00992 & 0.05028 & 0.09748 & 0.19767 \\ \cline{2-8}
+\multicolumn{1}{c|}{} & 误块率 & 0.00390 & 0.02020 & 0.03880 & 0.18800 & 0.33720 & 0.59010 \\ \hline
+\multicolumn{1}{c|}{\multirow{3}{*}{有汉明码编译码}} & 数据块数 & 10000 & 10000 & 10000 & 10000 & 10000 & 10000 \\ \cline{2-8} 
+\multicolumn{1}{c|}{} & 误比特率 & 0.00000 & 0.00020 & 0.00122 & 0.01790 & 0.06470 & 0.19032 \\ \cline{2-8}
+\multicolumn{1}{c|}{} & 误块率 & 0.00000 & 0.00040 & 0.00280 & 0.04240 & 0.14530 & 0.41250 \\ \hline
+\end{tabular}}
+\end{table}
+
+    \item 给出误码率随信道误符号率变化的曲线图。
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{./images/exp1-误码率与信道误符号率的关系.png}
+        \caption{误码率与信道误符号率的关系曲线}
+        \label{fig:exp1_ber_curve}
+    \end{figure}
+
+    \item 分析曲线变化原因。
+    
+    \textbf{分析：}
+    \begin{itemize}
+        \item \textbf{低误码率区域 ($\varepsilon < 0.01$)}：从图表和数据可以看出，当信道误符号率较低时，采用(7,4)汉明码后的误比特率和误块率均显著低于无编码情况（如在 $\varepsilon=0.001$ 时，误码率降至0）。这是因为(7,4)汉明码具有纠正1位错误的能力。在低信噪比下，一个码块（7位）中出现超过1位错误的概率极低，绝大多数错误都能被纠正。
+        \item \textbf{高误码率区域 ($\varepsilon > 0.1$)}：随着信道误符号率的增加，编码带来的增益逐渐减小。当 $\varepsilon$ 接近 0.2 时，有编码和无编码的误比特率曲线趋于重合，甚至在极端情况下编码可能带来负增益。这是因为当信道错误率很高时，一个码块内出现2位及以上错误的概率大幅增加。由于(7,4)汉明码的最小码距 $d_{min}=3$，它只能纠正1位错误；当发生2位或更多错误时，译码器会将其误译为另一个合法码字，从而导致甚至比未编码更多的比特错误（误码扩散效应）。
+    \end{itemize}
+
+\end{enumerate}
+
+
+\subsection{(7,4)汉明码的交织实验}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item 调试交织函数$interleaver$和解交织函数$deinterleaver$
+    \begin{enumerate}
+    
+    \item 给出使用[1,2,3,...,35]的整数序列时，交织前后及解交织前后的序列。
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{./images/exp2-1-1-交织效果.png}
+        \caption{整数序列交织与解交织效果验证}
+        \label{fig:exp2_interleave_verify}
+    \end{figure}
+    由图可见，原始序列经过交织打乱了顺序，但经解交织后完全恢复为原始递增序列，验证了算法的正确性。
+    
+    \item 给出使用全零的整数序列，突发错误长度为交织块行数时，解交织前后的错误图案。
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{./images/exp2-1-2-交织解交织错误图案.png}
+        \caption{突发错误长度=5（交织深度）时的错误图案}
+        \label{fig:exp2_burst_5}
+    \end{figure}
+    \textbf{分析}：本实验使用的交织器大小为 $5 \times 7$（从图标题可知）。当信道产生长度为5的突发错误（图中索引31-35）时，这些连续的错误在解交织后被分散到了不同的位置（索引7, 14, 21, 28, 35）。由于交织深度为5，解交织后相邻错误之间的距离变为了7（即码长），这意味着每个长度为7的行向量中只会被分配到一个错误。
+    
+    \item 给出使用全零的整数序列，突发错误长度为交织块行数的2倍时，解交织前后的错误图案。
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{./images/exp2-1-3-交织解交织错误图案.png}
+        \caption{突发错误长度=10（2倍交织深度）时的错误图案}
+        \label{fig:exp2_burst_10}
+    \end{figure}
+    \textbf{分析}：当突发错误长度增加到10（图中索引26-35）时，解交织后的错误虽然也被分散，但在某些位置出现了“成对”或邻近的错误（例如在同一个周期内出现了两个错误点）。对于(7,4)汉明码而言，这意味着同一个码字内可能分配到2个错误，超出了其纠错能力。
+    \end{enumerate}
+    
+    \item 差错控制编码与交织
+    \begin{enumerate}
+    \item 给出所使用的生成矩阵$\mathbf{G}$。
+    
+    本实验采用的生成矩阵 $\mathbf{G}$ 为：
+    \begin{equation}
+        \mathbf{G} = \begin{pmatrix}
+        1 & 0 & 0 & 0 & 1 & 1 & 0 \\
+        0 & 1 & 0 & 0 & 0 & 1 & 1 \\
+        0 & 0 & 1 & 0 & 1 & 1 & 1 \\
+        0 & 0 & 0 & 1 & 1 & 0 & 1 
+        \end{pmatrix}
+    \end{equation}
+    
+    \item 给出原始的信息序列$x$，汉明码编码后的序$x\_code$，交织后的序列$x\_interleave$，经过信道传输后的序列$y$，解交织后的序列$y\_deinterleave$，以及纠错后的序列$y\_decode$。
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{./images/exp2-2-2-汉明码+交织效果.png}
+        \vspace{-3em}
+        \caption{汉明码结合交织后的信道传输效果}
+        \label{fig:exp2_hamming_interleave}
+    \end{figure}
+    
+    \item 分析交织的作用和效果。
+    
+    \textbf{分析}：
+    汉明码是针对随机独立错误设计的，对突发错误的抵抗力较差。交织技术的核心作用是将信道中产生的成片的突发错误在时间上打散。在图 \ref{fig:exp2_hamming_interleave} 中可以看到，信道产生了一段连续的错误。如果不使用交织，这段错误会集中在这一两个码字中，导致该码字错误数超过1，汉明码无法纠正。使用交织后，这段突发错误在解交织后变成了分布在不同码字中的单个随机错误。由于每个码字中只分配到了一个错误，这正好在(7,4)汉明码的纠错能力范围内（$t=1$），因此最终的译码结果完全正确（误码率为0）。
+    
+    \item 记录不同信道突发错误长度下，有无交织/解交织时的误块率和误比特率。
+    
+    \begin{table}[htbp]
+\centering
+\caption{不同突发错误长度下交织对系统性能的影响}
+\label{tab:interleave_perf}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{cc|c|c|c|c|c|c}
+\hline
+\multicolumn{2}{c|}{信道突发错误长度} & 3 & 5 & 10 & 15 & 20 & 25 \\ \hline
+\multicolumn{1}{c|}{\multirow{3}{*}{无交织/解交织}} & 数据块数 & 10000 & 10000 & 10000 & 10000 & 10000 & 10000 \\ \cline{2-8} 
+\multicolumn{1}{c|}{} & 误比特率 & 0.04267 & 0.07555 & 0.14775 & 0.21698 & 0.28997 & 0.36475 \\ \cline{2-8}
+\multicolumn{1}{c|}{} & 误块率 & 0.08960 & 0.15380 & 0.28900 & 0.42250 & 0.55260 & 0.69390 \\ \hline
+\multicolumn{1}{c|}{\multirow{3}{*}{有交织/解交织}} & 数据块数 & 10000 & 10000 & 10000 & 10000 & 10000 & 10000 \\ \cline{2-8} 
+\multicolumn{1}{c|}{} & 误比特率 & 0.00000 & 0.00000 & 0.10093 & 0.24088 & 0.34203 & 0.40560 \\ \cline{2-8}
+\multicolumn{1}{c|}{} & 误块率 & 0.00000 & 0.00000 & 0.24990 & 0.50070 & 0.68720 & 0.81640 \\ \hline
+\end{tabular}}
+\end{table}
+
+    \textbf{分析}：
+    可以看到，当突发错误长度 $\le 5$ 时，有交织系统的误码率保持为 0，因为交织深度为5，能将长度为5的突发错误完全分散为单比特错误并由汉明码纠正。
+    当突发错误长度达到 10 时，误比特率陡增至 0.10093。这是因为长度为10的突发错误分散后，每个码字平均分配到2个错误，超出了(7,4)汉明码的纠错能力。这验证了交织深度与最大可纠正突发错误长度之间的直接关系。
+    \end{enumerate}
+\end{enumerate}
+
+\section{实验总结、体会和建议}
+\begin{itemize}
+    \item 通过(7,4)汉明码的实验，验证了线性分组码在低信噪比环境下对随机错误的有效纠正能力，同时也观察到了其在超过纠错门限后性能的急剧下降。
+    \item 通过交织实验，直观地理解了“将突发错误转化为随机错误”的原理。实验数据表明，合理的交织深度配合纠错码，能极大地提升系统抵抗突发干扰的能力。
+    \item 实验结果定量地展示了交织深度的重要性：只有当突发错误长度小于或等于交织深度时，简单的汉明码才能发挥最佳效能。
+\end{itemize}
+
+\end{document}
