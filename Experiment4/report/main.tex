@@ -1,0 +1,131 @@
+% Homework template for Inference and Information
+% UPDATE: September 26, 2017 by Xiangxiang
+\documentclass[a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{moreenum}
+\usepackage{mathtools}
+\usepackage{url}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{siunitx}
+\lstset{
+    basicstyle          =   \sffamily,          % 基本代码风格
+    keywordstyle        =   \bfseries,          % 关键字风格
+    commentstyle        =   \rmfamily\itshape,  % 注释的风格，斜体
+    stringstyle         =   \ttfamily,  % 字符串风格
+    flexiblecolumns,                % 
+    numbers             =   left,   % 行号的位置在左边
+    showspaces          =   false,  % 是否显示空格，显示了有点乱，所以不显示了
+    numberstyle         =   \zihao{-5}\ttfamily,    % 行号的样式，小五号，tt等宽字体
+    showstringspaces    =   false,
+    captionpos          =   t,      % 这段代码的名字所呈现的位置，t指的是top上面
+    frame               =   lrtb,   % 显示边框
+}
+
+\lstdefinestyle{Python}{
+    language        =   Python, % 语言选Python
+    basicstyle      =   \zihao{-5}\ttfamily,
+    numberstyle     =   \zihao{-5}\ttfamily,
+    keywordstyle    =   \color{blue},
+    keywordstyle    =   [2] \color{teal},
+    stringstyle     =   \color{magenta},
+    commentstyle    =   \color{red}\ttfamily,
+    breaklines      =   true,   % 自动换行，建议不要写太长的行
+    columns         =   fixed,  % 如果不加这一句，字间距就不固定，很丑，必须加
+    basewidth       =   0.5em,
+}
+% \usepackage{subcaption}
+\usepackage[caption=false,font=footnotesize,labelfont=rm,textfont=rm,subrefformat=parens]{subfig}
+\usepackage{booktabs} % toprule
+\usepackage[mathcal]{eucal}
+\usepackage{color}
+\usepackage{iidef}
+\newif\ifans\anstrue
+\newcommand{\myspace}[1]{\par\vspace{#1\baselineskip}}
+
+\thecourseinstitute{\textnormal{通信与网络}}
+\theterm{确定}
+\begin{document}
+
+
+
+\vspace{3mm}
+\centerline{\textbf{\Large{实验4$\quad$差错控制编码实验报告}}}
+
+\setcounter{section}{4}
+
+\section{实验内容}
+\subsection{(7,4)汉明码的纠错实验}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item 记录不同信道误符号率$\varepsilon$下，有汉明码编译码和无汉明码编译码时的误块率和误比特率。
+\begin{table}[htbp]
+\centering
+\begin{tabular}{cc|c|c|c|c|c|c}
+\hline
+\multicolumn{2}{c|}{信道误符号率}                          & 0.001     & 0.005 & 0.01 & 0.05& 0.1&0.2\\ \hline
+\multicolumn{1}{c|}{\multirow{3}{*}{无汉明码编译码}} & 数据块数 &   &     &     &  & &   \\ \cline{2-8} 
+\multicolumn{1}{c|}{}                       & 误比特率  &   &     &     &   & &  \\ \cline{2-8}
+\multicolumn{1}{c|}{}                       & 误块率  &   &     &     &   & &  \\ \hline
+\multicolumn{1}{c|}{\multirow{3}{*}{有汉明码编译码}} & 数据块数 &   &     &     &  & &   \\ \cline{2-8} 
+\multicolumn{1}{c|}{}                       & 误比特率  &   &     &     &   & &  \\ \cline{2-8}
+\multicolumn{1}{c|}{}                       & 误块率  &   &     &     &   & &  \\ \hline
+\end{tabular}
+    \caption{差错控制编码实验记录}
+    \label{tab:laplace_junyun}
+\end{table}
+    \item 给出误码率随信道误符号率变化的曲线图。
+    \item 分析曲线变化原因。
+
+
+\end{enumerate}
+
+
+\subsection{(7,4)汉明码的交织实验}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item 调试交织函数$interleaver$和解交织函数$deinterleaver$
+    \begin{enumerate}
+    \item 给出使用[1,2,3,...,35]的整数序列时，交织前后及解交织前后的序列。
+    \item 给出使用全零的整数序列，突发错误长度为交织块行数时，解交织前后的错误图案。
+    \item 给出使用全零的整数序列，突发错误长度为交织块行数的2倍时，解交织前后的错误图案。
+    \end{enumerate}
+    \item 差错控制编码与交织
+    \begin{enumerate}
+    \item 给出所使用的生成矩阵$\mathbf{G}$。
+    \item 给出原始的信息序列$x$，汉明码编码后的序$x\_code$，交织后的序列$x\_interleave$，经过信道传输后的序列$y$，解交织后的序列$y\_deinterleave$，以及纠错后的序列$y\_decode$。
+    \item 分析交织的作用和效果。
+    \item 记录不同信道突发错误长度下，有无交织/解交织时的误块率和误比特率。
+    \begin{table}[htbp]
+\centering
+\begin{tabular}{cc|c|c|c|c|c|c}
+\hline
+\multicolumn{2}{c|}{信道突发错误长度}                          & 3     & 5 & 10 & 15& 20&25\\ \hline
+\multicolumn{1}{c|}{\multirow{3}{*}{无交织/解交织}} & 数据块数 &   &     &     &  & &   \\ \cline{2-8} 
+\multicolumn{1}{c|}{}                       & 误比特率  &   &     &     &   & &  \\ \cline{2-8}
+\multicolumn{1}{c|}{}                       & 误块率  &   &     &     &   & &  \\ \hline
+\multicolumn{1}{c|}{\multirow{3}{*}{有交织/解交织}} & 数据块数 &   &     &     &  & &   \\ \cline{2-8} 
+\multicolumn{1}{c|}{}                       & 误比特率  &   &     &     &   & &  \\ \cline{2-8}
+\multicolumn{1}{c|}{}                       & 误块率  &   &     &     &   & &  \\ \hline
+\end{tabular}
+    \caption{差错控制编码实验记录}
+    \label{tab:laplace_junyun}
+\end{table}
+    \end{enumerate}
+\end{enumerate}
+
+\section{实验总结、体会和建议}
+
+\end{document}
+
+
+
+
+%%% Local Variables:
+%%% mode: late\rvx
+%%% TeX-master: t
+%%% End:
