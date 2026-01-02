@@ -1,11 +1,13 @@
+clc; clear; close all;
+
+rng(093);
+
 % 码长
 n = 7;
-
 % 信息位长
 k = 4;
-
 % 传输比特块数
-M = 10000;
+M = 5;
 
 % 交织块行数
 row = 5;
@@ -14,14 +16,13 @@ column = 7;
 % 交织块数量
 number = (M*n)/(row*column);
 
-
-
 % 生成矩阵
-Q = $TODO$;
+% 选取满足汉明码要求的Q矩阵
+Q = [1 1 0; 0 1 1; 1 1 1; 1 0 1];
 G = [eye(k) Q];
 
 % 监督矩阵
-H = $TODO$;
+H = [Q.' eye(n-k)];
 
 % 随机生成Mk个需要传输的比特
 x_data = randi([0 1], 1, M*k);
@@ -39,7 +40,7 @@ end
 % 交织 按行写入 按列读出成比特流向量
 x_interleave = zeros(1,M*n);
 for i = 1:number
-    x_interleave((i-1)*row*column+1:i*row*column) =  interleaver(row, column, x_code((i-1)*row*column+1:i*row*column));
+    x_interleave((i-1)*row*column+1:i*row*column) = interleaver(row, column, x_code((i-1)*row*column+1:i*row*column));
 end
 % fprintf('x_interleave\n');
 % disp(x_interleave);
@@ -65,7 +66,7 @@ end
 y_decode = zeros(1,M*k);
 for i = 1:M
     % 利用监督矩阵计算校正子
-    syndrome = $TODO$;
+    syndrome = mod(y_deinterleave((i-1)*n+1:i*n) * H', 2);
 
     % 比较校正子和监督矩阵，找出错误位置
     if ismember(H',syndrome,'rows') == zeros(n,1)
@@ -92,23 +93,47 @@ result = transpose(reshape(result,[k,M]));
 BlockErrorRate_code = sum(~ismember(result,zeros(1,k),'rows'))/M;
 BitErrorRate_code = sum(result,'all')/(M*k);
 
-function x_interleave = interleaver(row, column, x)
-x = $TODO$;
-x = x';
-x_interleave = x(:)';
-end
-
-function y = burst_error(x, L)
-noise = zeros(1,size(x,2));
-error_idx = randi([1,size(x,2)-L+1]);
-noise(1,error_idx:error_idx+L-1) = (rand(1,L)<0.5);
-y = mod(x + noise, 2);
-end
-
-function y_deinterleave = deinterleaver(row, column, y)
-y = $TODO$;
-y = y';
-y_deinterleave = y(:)';
-end
-
-
+figure;
+subplot(7,1,1);
+stem(x_data, 'filled');
+title('原始信息比特序列');
+xlabel('索引');
+ylabel('比特值');
+grid on;
+subplot(7,1,2);
+stem(x_code, 'filled');
+title('编码后比特序列');
+xlabel('索引');
+ylabel('比特值');
+grid on;
+subplot(7,1,3);
+stem(x_interleave, 'filled');
+title('交织后比特序列');
+xlabel('索引');
+ylabel('比特值');
+grid on;
+subplot(7,1,4);
+stem(y, 'filled');
+title('信道输出比特序列（含突发错误）');
+xlabel('索引');
+ylabel('比特值');
+grid on;
+subplot(7,1,5);
+stem(y_deinterleave, 'filled');
+title('解交织后比特序列');
+xlabel('索引');
+ylabel('比特值');
+grid on;
+subplot(7,1,6);
+stem(y_decode, 'filled');
+title('译码后比特序列');
+xlabel('索引');
+ylabel('比特值');
+grid on;
+subplot(7,1,7);
+stem(x_data ~= y_decode, 'filled');
+title('解码后误比特序列');
+xlabel('索引');
+ylabel('比特值');
+grid on;
+fprintf("有交织信道编码误块率：%.4f，有交织信道编码误比特率：%.4f\n", BlockErrorRate_code, BitErrorRate_code);

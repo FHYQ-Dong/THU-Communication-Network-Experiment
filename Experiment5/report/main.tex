@@ -1,0 +1,160 @@
+% Homework template for Inference and Information
+% UPDATE: September 26, 2017 by Xiangxiang
+\documentclass[a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{moreenum}
+\usepackage{mathtools}
+\usepackage{url}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{siunitx}
+\lstset{
+    basicstyle          =   \sffamily,          % 基本代码风格
+    keywordstyle        =   \bfseries,          % 关键字风格
+    commentstyle        =   \rmfamily\itshape,  % 注释的风格，斜体
+    stringstyle         =   \ttfamily,  % 字符串风格
+    flexiblecolumns,                % 
+    numbers             =   left,   % 行号的位置在左边
+    showspaces          =   false,  % 是否显示空格，显示了有点乱，所以不显示了
+    numberstyle         =   \zihao{-5}\ttfamily,    % 行号的样式，小五号，tt等宽字体
+    showstringspaces    =   false,
+    captionpos          =   t,      % 这段代码的名字所呈现的位置，t指的是top上面
+    frame               =   lrtb,   % 显示边框
+}
+
+\lstdefinestyle{Python}{
+    language        =   Python, % 语言选Python
+    basicstyle      =   \zihao{-5}\ttfamily,
+    numberstyle     =   \zihao{-5}\ttfamily,
+    keywordstyle    =   \color{blue},
+    keywordstyle    =   [2] \color{teal},
+    stringstyle     =   \color{magenta},
+    commentstyle    =   \color{red}\ttfamily,
+    breaklines      =   true,   % 自动换行，建议不要写太长的行
+    columns         =   fixed,  % 如果不加这一句，字间距就不固定，很丑，必须加
+    basewidth       =   0.5em,
+}
+% \usepackage{subcaption}
+\usepackage[caption=false,font=footnotesize,labelfont=rm,textfont=rm,subrefformat=parens]{subfig}
+\usepackage{booktabs} % toprule
+\usepackage[mathcal]{eucal}
+\usepackage{color}
+\usepackage{iidef}
+\newif\ifans\anstrue
+\newcommand{\myspace}[1]{\par\vspace{#1\baselineskip}}
+
+\thecourseinstitute{\textnormal{通信与网络}}
+\theterm{确定}
+\begin{document}
+
+
+
+\vspace{3mm}
+\centerline{\textbf{\Large{实验5$\quad$频分多址实验报告}}}
+
+\setcounter{section}{4}
+
+\section{实验内容}
+% \subsection{BPSK调制}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item 绘制发射信号波形功率谱。根据功率谱密度计算各用户的功率和总功率。
+    
+    功率谱密度如图 \ref{fig:psd} 所示。
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/Power_Spectrum_SNR.png}
+        \caption{发射信号功率谱密度}
+        \label{fig:psd}
+    \end{figure}
+    程序输出总功率和各用户功率如下：
+    \begin{verbatim}
+总功率 400 W
+用户1：中心频率 200 Hz，功率 45.8653 W
+用户2：中心频率 400 Hz，功率 49.0588 W
+用户3：中心频率 600 Hz，功率 49.2762 W
+用户4：中心频率 800 Hz，功率 48.086 W
+    \end{verbatim}
+
+    \item 在多个噪声功率谱密度下，比较发送信号和接收信号，统计误符号率、误比特率。画出误比特率与 $E_b/n_0$ 之间的关系曲线,并与理论误比特率曲线进行对比。
+    
+    扫描 $E_b/n_0$ 范围为 \lstinline|-5:1:5|. 由于是BPSK调制，误符号率与误比特率相等。误比特率与 $E_b/n_0$ 曲线如图 \ref{fig:ber} 所示，各个 $E_b/n_0$ 情况下的发送与接收波形图如图 \ref{fig:wave} 所示。
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{images/BER_Curve_Comparison.png}
+        \caption{误比特率与 $E_b/n_0$ 曲线}
+        \label{fig:ber}
+    \end{figure}
+
+    图中将四个用户的误比特率进行了平均。经验证，各个用户之间的误比特率差异不超过 $1\%$，平均是合理的。仿真结果与理论值一致。
+
+    \begin{figure}[H]
+        \centering
+        % 第一行: -5dB, -4dB, -3dB
+        \subfloat[$E_b/n_0 = -5\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_-5dB.png}}
+        \hfill
+        \subfloat[$E_b/n_0 = -4\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_-4dB.png}}
+        \hfill
+        \subfloat[$E_b/n_0 = -3\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_-3dB.png}}
+        \\ % 换行
+        
+        % 第二行: -2dB, -1dB, 0dB
+        \subfloat[$E_b/n_0 = -2\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_-2dB.png}}
+        \hfill
+        \subfloat[$E_b/n_0 = -1\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_-1dB.png}}
+        \hfill
+        \subfloat[$E_b/n_0 = 0\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_0dB.png}}
+        \\ % 换行
+
+        % 第三行: 1dB, 2dB, 3dB
+        \subfloat[$E_b/n_0 = 1\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_1dB.png}}
+        \hfill
+        \subfloat[$E_b/n_0 = 2\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_2dB.png}}
+        \hfill
+        \subfloat[$E_b/n_0 = 3\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_3dB.png}}
+        \\ % 换行
+
+        % 第四行: 4dB, 5dB (居中排列)
+        \subfloat[$E_b/n_0 = 4\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_4dB.png}}
+        \hspace{0.02\linewidth} % 微调间距
+        \subfloat[$E_b/n_0 = 5\text{ dB}$]{
+            \includegraphics[width=0.32\linewidth]{images/Waveform_SNR_5dB.png}}
+        
+        \caption{不同 $E_b/n_0$ 下的发送与接收波形对比}
+        \label{fig:wave}
+    \end{figure}
+
+\end{enumerate}
+
+
+\section{实验总结、体会和建议}
+    \begin{itemize}
+        \item 实现了基于 BPSK 调制的基带信号产生、矩形脉冲成形、载波调制、AWGN 信道传输以及相干解调与最佳接收判决的全过程。
+        \item 利用滑动窗 FFT 方法绘制了发射信号的功率谱密度图像，验证了频分复用的频谱特性。通过对功率谱密度的积分，计算出的总功率与各用户功率与理论预期基本吻合。
+        \item 在 $E_b/n_0$ 从 \SI{-5}{\dB} 到 \SI{5}{\dB} 的范围内进行了仿真。系统的误比特率曲线与 BPSK 理论曲线高度重合。
+    \end{itemize}
+\end{document}
+
+
+
+
+%%% Local Variables:
+%%% mode: late\rvx
+%%% TeX-master: t
+%%% End:
