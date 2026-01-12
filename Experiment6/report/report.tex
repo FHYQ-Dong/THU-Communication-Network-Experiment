@@ -1,0 +1,122 @@
+% Homework template for Inference and Information
+% UPDATE: September 26, 2017 by Xiangxiang
+\documentclass[a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{moreenum}
+\usepackage{mathtools}
+\usepackage{url}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{siunitx}
+\usepackage[caption=false,font=footnotesize,labelfont=rm,textfont=rm,subrefformat=parens]{subfig}
+\usepackage{booktabs} 
+\usepackage[mathcal]{eucal}
+\usepackage{color}
+\usepackage{iidef} % 如果编译报错缺少此包，请确保同目录下有iidef.sty，或者注释掉
+\usepackage{float} % 强制图片位置
+\usepackage{geometry}
+
+\newif\ifans\anstrue
+\newcommand{\myspace}[1]{\par\vspace{#1\baselineskip}}
+
+\geometry{a4paper, scale=0.8}
+
+
+
+\begin{document}
+
+\vspace{3mm}
+\centerline{\textbf{\Large{实验6$\quad$ALOHA}}} 
+
+\setcounter{section}{3} % 调整章节编号以匹配指导书
+
+\section{实验内容与结果分析}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item 设置用户数 $N = 50$，单用户的帧到达率 $\lambda$ 范围为 \lstinline|1:1:60|. 分别绘制出纯ALOHA和Slotted ALOHA的理论计算的 $\rho-G$ 曲线和在上述两种帧到达过程设置下的仿真 $\rho-G$ 曲线。观察结果，并解释仿真结果和理论结果有差距的原因。
+    
+    如图 \ref{fig:pure_aloha_all} 和图 \ref{fig:slotted_aloha_all} 所示，观察仿真图像 $N=50$，在设置1（纯泊松过程）下，仿真得到的 $\rho-G$ 曲线与理论公式相符。在设置2（非修正 $\lambda$）下，随着网络负载 $G$ 的增加，仿真得到的吞吐率 $\rho$ 明显高于理论值。
+
+    原因：理论公式假设帧的到达服从泊松过程，即用户可以在任意时刻产生新帧，包括上一帧正在发送的期间。而在设置2中，模拟了更符合实际的场景：用户在发送某一帧的持续时间 $T_{fr}$ 内无法产生新的数据帧。这种机制导致了实际的帧生成间隔变大。当名义上的参数 $\lambda$ 不变时，由于加入了固定的 $T_{fr}$ 间隔，用户的实际平均帧到达率更低。因此，对于相同的横坐标，实际注入网络的流量更小，冲突较少。因此表现出的吞吐率 $\rho$ 更高。
+
+    \item 在(1)的绘图结果的基础上多绘制一条仿真 $\rho-G$ 曲线：在帧到达过程设置2下修正 $\lambda$ 使之更接近于真实的到达率，观察结果。代码中给出了一种修正方法，解释它的原理。
+    
+    如图 \ref{fig:pure_aloha_all} 和图 \ref{fig:slotted_aloha_all} 所示，使用修正后的 $\lambda_{real}$ 进行仿真后，得到的 $\rho-G$ 曲线与理论曲重新重合。
+    
+    原理：在设置2中，一个完整的发送周期由两部分组成：
+    \begin{itemize}
+        \item 数据帧发送时间：固定为 $T_{fr}$。
+        \item 下一帧到达前的等待时间：服从均值为 $1/\lambda$ 的指数分布。
+    \end{itemize}
+    因此，一个用户发送两帧之间的平均时间间隔 $E[T_{interval}]$ 为：
+    \begin{equation}
+        E[T_{interval}] = T_{fr} + E[T_{idle}] = T_{fr} + \frac{1}{\lambda}
+    \end{equation}
+    用户的真实到达率 $\lambda_{real}$ 为：
+    \begin{equation}
+        \lambda_{real} = \frac{1}{E[T_{interval}]} = \frac{1}{T_{fr} + \frac{1}{\lambda}} = \frac{\lambda}{1 + \lambda T_{fr}}
+    \end{equation}
+    这即是代码中使用的修正公式。
+
+    \item 改变用户数 $N$ ，重做(2)，观察总结 $N$ 对仿真结果的影响，并解释。
+    
+    扫描 $N$ 的范围为 \lstinline|20:10:80|，结果如图 \ref{fig:pure_aloha_all} 和图 \ref{fig:slotted_aloha_all} 所示。
+
+    随着 $N$ 的增加，设置2中未修正的仿真点与理论曲线的差距逐渐缩小。
+    
+    原因：考查修正因子 $\frac{\lambda_{real}}{\lambda} = \frac{1}{1 + \lambda T_{fr}}$，为了保持归一化总负载 $G = N \lambda T_{fr}$ 为一个固定的常数，当用户数 $N$ 增大时，单用户的到达率 $\lambda$ 必须相应减小。
+    \begin{itemize}
+        \item 当 $N$ 较小时，单用户 $\lambda$ 较大，$\lambda T_{fr}$ 较大，分母 $1+\lambda T_{fr}$ 显著大于1，修正效应明显，因此未修正前的误差很大。
+        \item 当 $N$ 较大时，单用户 $\lambda$ 很小，$\lambda T_{fr} \to 0$，分母 $1+\lambda T_{fr} \to 1$，即 $\lambda_{real} \approx \lambda$。此时到达过程更接近纯泊松过程，因此偏差减小。
+    \end{itemize}
+    综上所述，用户数越多，单个用户的负载越轻，系统的行为就越接近理想的泊松过程假设。
+    
+    \begin{figure}[H]
+        \centering
+        \subfloat[N=20]{\includegraphics[width=0.32\textwidth]{images/ALOHA_N_20.png}}
+        \hfill
+        \subfloat[N=30]{\includegraphics[width=0.32\textwidth]{images/ALOHA_N_30.png}}
+        \hfill
+        \subfloat[N=40]{\includegraphics[width=0.32\textwidth]{images/ALOHA_N_40.png}}
+        \\
+        \subfloat[N=50]{\includegraphics[width=0.32\textwidth]{images/ALOHA_N_50.png}}
+        \hfill
+        \subfloat[N=60]{\includegraphics[width=0.32\textwidth]{images/ALOHA_N_60.png}}
+        \hfill
+        \subfloat[N=70]{\includegraphics[width=0.32\textwidth]{images/ALOHA_N_70.png}}
+        \\
+        \subfloat[N=80]{\includegraphics[width=0.32\textwidth]{images/ALOHA_N_80.png}}
+        \caption{不同用户数 $N$ 下的纯 ALOHA 协议仿真对比}
+        \label{fig:pure_aloha_all}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \subfloat[N=20]{\includegraphics[width=0.32\textwidth]{images/Slotted_ALOHA_N_20.png}}
+        \hfill
+        \subfloat[N=30]{\includegraphics[width=0.32\textwidth]{images/Slotted_ALOHA_N_30.png}}
+        \hfill
+        \subfloat[N=40]{\includegraphics[width=0.32\textwidth]{images/Slotted_ALOHA_N_40.png}}
+        \\
+        \subfloat[N=50]{\includegraphics[width=0.32\textwidth]{images/Slotted_ALOHA_N_50.png}}
+        \hfill
+        \subfloat[N=60]{\includegraphics[width=0.32\textwidth]{images/Slotted_ALOHA_N_60.png}}
+        \hfill
+        \subfloat[N=70]{\includegraphics[width=0.32\textwidth]{images/Slotted_ALOHA_N_70.png}}
+        \\
+        \subfloat[N=80]{\includegraphics[width=0.32\textwidth]{images/Slotted_ALOHA_N_80.png}}
+        \caption{不同用户数 $N$ 下的 Slotted ALOHA 协议仿真对比}
+        \label{fig:slotted_aloha_all}
+    \end{figure}
+
+\end{enumerate}
+
+
+\section{实验总结、体会和建议}
+实验验证了纯 ALOHA 最大吞吐率为 $1/2e \approx 0.184$，而 Slotted ALOHA 通过时隙同步将脆弱时间减半，使最大吞吐率提升至 $1/e \approx 0.368$。此外，通过对比两种不同的帧到达设置，我认识到理论模型（泊松过程）与实际系统（存在发送阻塞）之间的差异。
+
+\end{document}
